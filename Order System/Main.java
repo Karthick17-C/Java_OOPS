@@ -1,11 +1,11 @@
 import java.util.Scanner;
 
 class Meals{
-    private int price;
+    protected int price;
     private int dessert_price = 100;
     private int packing = 20;
     private boolean veg;
-    private boolean dessert = false;
+    protected boolean dessert = false;
 
     public Meals(boolean veg){
         this.veg = veg;
@@ -43,9 +43,33 @@ class Meals{
         System.out.println("Total amount : "+this.price);
     }
 }
+
+class SpecialMeals extends Meals{
+    private int Special = 300;
+
+    public SpecialMeals(boolean veg){
+        super(veg);
+        price+=Special;
+        includeDessert(true);
+    }
+
+    @Override
+    public void placeOrder(){
+        System.out.println("Special Order Received.");
+        System.out.println("Extra Charges for Special Meals : "+Special);
+        super.placeOrder();
+    }
+}
 public class Main{
     public static void main(String[] args) {
         Scanner s = new Scanner(System.in);
+        System.out.println("Specail/Normal Meals? : (Enter S/N)");
+        String spec = s.nextLine();
+        if(spec.length()!=1 || ((spec.charAt(0)!='S') && (spec.charAt(0)!='N'))){
+            System.out.println("Invalid !");
+            s.close();
+            return;
+        }
         System.out.println("Veg/Non-Veg ? : (Enter V/N)");
         String in = s.nextLine();
         if(in.length()!=1 || ((in.charAt(0)!='V') && (in.charAt(0)!='N'))){
@@ -57,19 +81,26 @@ public class Main{
         if(in.charAt(0)=='V'){
             pass = true;
         }
-        Meals Buy = new Meals(pass);
-        System.out.println("Do you need to include Dessert ? : (Enter Y/N)");
-        String add = s.nextLine();
-        if(add.length()!=1 || ((add.charAt(0)!='Y') && (add.charAt(0)!='N'))){
-            System.out.println("Invalid !");
-            s.close();
-            return;
+        Meals Buy;
+         if(spec.charAt(0)=='S'){
+            Buy = new SpecialMeals(pass);
+        }else{
+            Buy = new Meals(pass);
         }
-        boolean ad = false;
-        if(add.charAt(0)=='Y'){
-            ad  = true;
+        if(spec.charAt(0)=='N'){
+            System.out.println("Do you need to include Dessert ? : (Enter Y/N)");
+            String add = s.nextLine();
+            if(add.length()!=1 || ((add.charAt(0)!='Y') && (add.charAt(0)!='N'))){
+                System.out.println("Invalid !");
+                s.close();
+                return;
+            }
+            boolean ad = false;
+            if(add.charAt(0)=='Y'){
+                ad  = true;
+            }
+            Buy.includeDessert(ad);
         }
-        Buy.includeDessert(ad);
         Buy.placeOrder();
         s.close();
     }
